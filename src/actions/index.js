@@ -2,6 +2,19 @@
 import _ from 'lodash';
 import jsonPlaceholder from '../apis/jsonPlaceholder';
 
+export const fetchPostsAndUsers = () => async (dispatch, getState) => {
+	console.log('about to fetch posts');
+	await dispatch(fetchPosts());
+
+	console.log(getState().posts);
+
+	// using loadsh to again, using their map function, uniq get all uniq ids
+
+	const userIds = _.uniq(_.map(getState().posts, 'userId'));
+	userIds.forEach((id) => dispatch(fetchUser(id)));
+	console.log(userIds);
+};
+
 export const fetchPosts = () => async (dispatch) => {
 	const response = await jsonPlaceholder.get('/posts');
 
@@ -9,14 +22,18 @@ export const fetchPosts = () => async (dispatch) => {
 	dispatch({ type: 'FETCH_POSTS', payload: response.data });
 };
 
-export const fetchUser = (userId) => (dispatch) => {
-	_fetchUser(userId, dispatch);
+export const fetchUser = (userId) => async (dispatch) => {
+	const response = await jsonPlaceholder.get(`/users/${userId}`);
+
+	dispatch({ type: 'FETCH_USER', payload: response.data });
 };
 
 // must momoize function outside the aciton creator for it to acutally work. _ means its private, dont user anywhere else.
 
-const _fetchUser = _.memoize(async (userId, dispatch) => {
-	const response = await jsonPlaceholder.get(`/users/${userId}`);
+// const _fetchUser = _.memoize(async (userId, dispatch) => {
+// 	const response = await jsonPlaceholder.get(`/users/${userId}`);
 
-	dispatch({ type: 'FETCH_USER', payload: response.data });
-});
+// 	dispatch({ type: 'FETCH_USER', payload: response.data });
+// });
+
+// Another approach, useful if you need to get updated users
