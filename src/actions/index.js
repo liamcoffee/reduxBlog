@@ -3,16 +3,17 @@ import _ from 'lodash';
 import jsonPlaceholder from '../apis/jsonPlaceholder';
 
 export const fetchPostsAndUsers = () => async (dispatch, getState) => {
-	console.log('about to fetch posts');
 	await dispatch(fetchPosts());
-
-	console.log(getState().posts);
 
 	// using loadsh to again, using their map function, uniq get all uniq ids
 
-	const userIds = _.uniq(_.map(getState().posts, 'userId'));
-	userIds.forEach((id) => dispatch(fetchUser(id)));
-	console.log(userIds);
+	// const userIds = _.uniq(_.map(getState().posts, 'userId'));
+	// userIds.forEach((id) => dispatch(fetchUser(id)));
+	// console.log(userIds);
+
+	// lodash chain, currying?  .value is need (basically an execute!?)
+
+	_.chain(getState().posts).map('userId').uniq().forEach((id) => dispatch(fetchUser(id))).value();
 };
 
 export const fetchPosts = () => async (dispatch) => {

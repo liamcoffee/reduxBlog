@@ -7,6 +7,7 @@ import thunk from 'redux-thunk';
 import App from './components/App';
 import reducers from './reducers';
 
+// anytime we dispatch an action, the action will be sent to middleware first.
 const store = createStore(reducers, applyMiddleware(thunk));
 
 ReactDOM.render(
